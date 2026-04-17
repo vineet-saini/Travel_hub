@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title>TravelHub | Discover the World</title></head>
+<body>
+
+<!-- HERO -->
+<div class="hero-section position-relative overflow-hidden"
+     style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 88vh; display:flex; align-items:center;">
+  <div class="hero-bg-overlay position-absolute w-100 h-100"
+       style="background: url('/images/travel-banner.jpg') center/cover no-repeat; opacity:0.2; top:0; left:0;"></div>
+  <div class="container position-relative py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-6 text-white">
+        <span class="badge-ai mb-3 d-inline-block"><i class="fas fa-robot me-1"></i> AI-Powered Price Intelligence</span>
+        <h1 style="font-family:'Playfair Display',serif; font-size:3.5rem; line-height:1.2;" class="fw-bold mb-3">
+          Explore the World,<br><span style="color:#e94560;">Your Way</span>
+        </h1>
+        <p class="lead mb-4" style="color:rgba(255,255,255,0.8); font-size:1.1rem;">
+          Discover handpicked destinations with AI-powered price comparison. We guarantee the best deals across 50+ travel platforms.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="#destinations" class="btn btn-primary btn-lg px-4 py-2">
+            <i class="fas fa-compass me-2"></i>Explore Destinations
+          </a>
+          <a href="#ai-compare" class="btn btn-outline-light btn-lg px-4 py-2">
+            <i class="fas fa-chart-line me-2"></i>Compare Prices
+          </a>
+        </div>
+        <div class="d-flex gap-4 mt-5">
+          <div class="text-center">
+            <div style="font-size:1.8rem; font-weight:700; color:#f5a623;">10K+</div>
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.6);">Happy Travelers</div>
+          </div>
+          <div style="width:1px; background:rgba(255,255,255,0.2);"></div>
+          <div class="text-center">
+            <div style="font-size:1.8rem; font-weight:700; color:#f5a623;">50+</div>
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.6);">Destinations</div>
+          </div>
+          <div style="width:1px; background:rgba(255,255,255,0.2);"></div>
+          <div class="text-center">
+            <div style="font-size:1.8rem; font-weight:700; color:#f5a623;">₹Best</div>
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.6);">Price Guarantee</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-5 mt-lg-0">
+        <!-- Quick Search Card -->
+        <div class="card p-4 shadow-lg" style="border-radius:20px; background:rgba(255,255,255,0.97);">
+          <h5 class="fw-bold mb-3" style="color:#1a1a2e;"><i class="fas fa-search me-2" style="color:#e94560;"></i>Find Your Trip</h5>
+          <div class="mb-3">
+            <label class="form-label">Destination</label>
+            <select class="form-select" id="quickDestination">
+              <option value="">Select destination...</option>
+              <optgroup label="🇮🇳 India">
+                <option value="Kashmir">Kashmir</option>
+                <option value="Shimla">Shimla</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Agra">Agra</option>
+              </optgroup>
+              <optgroup label="🇺🇸 United States">
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Miami">Miami</option>
+              </optgroup>
+              <optgroup label="🇨🇦 Canada">
+                <option value="Toronto">Toronto</option>
+                <option value="Vancouver">Vancouver</option>
+                <option value="Niagara">Niagara</option>
+              </optgroup>
+              <optgroup label="🇬🇧 United Kingdom">
+                <option value="London">London</option>
+                <option value="Edinburgh">Edinburgh</option>
+                <option value="Manchester">Manchester</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label">Travel Date</label>
+              <input type="date" class="form-control" id="quickDate">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Travelers</label>
+              <input type="number" class="form-control" value="2" min="1" max="20" id="quickPeople">
+            </div>
+          </div>
+          <button class="btn btn-primary w-100 py-2" onclick="quickSearch()">
+            <i class="fas fa-search me-2"></i>Search Packages
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI PRICE COMPARISON -->
+<div id="ai-compare" class="py-5" style="background: linear-gradient(135deg, #667eea15, #764ba215);">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="badge-ai mb-2 d-inline-block"><i class="fas fa-robot me-1"></i> AI Feature</span>
+      <h2 class="section-title">Smart Price Comparison</h2>
+      <p class="section-subtitle">Our AI scans 50+ travel platforms to find you the best deal in real-time</p>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card p-4 shadow">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+              <label class="form-label">Select Destination</label>
+              <select class="form-select" id="compareDestination">
+                <option value="">Choose destination...</option>
+                <option value="Kashmir" data-price="25000">Kashmir, India</option>
+                <option value="Shimla" data-price="18000">Shimla, India</option>
+                <option value="Agra" data-price="12000">Agra, India</option>
+                <option value="New York" data-price="85000">New York, USA</option>
+                <option value="London" data-price="95000">London, UK</option>
+                <option value="Toronto" data-price="90000">Toronto, Canada</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Travelers</label>
+              <input type="number" class="form-control" id="comparePeople" value="2" min="1" max="20">
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary w-100 py-2" onclick="runAIComparison()">
+                <i class="fas fa-robot me-2"></i>Compare Now
+              </button>
+            </div>
+          </div>
+          <div id="comparisonResult" class="mt-4 d-none">
+            <hr>
+            <div class="d-flex align-items-center mb-3">
+              <span class="badge-ai me-2"><i class="fas fa-robot me-1"></i>AI Analysis</span>
+              <span class="text-muted small" id="compareDestLabel"></span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle" id="priceTable">
+                <thead style="background:#f8f9fc;">
+                  <tr>
+                    <th>Platform</th>
+                    <th>Price/Person</th>
+                    <th>Total</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="priceTableBody"></tbody>
+              </table>
+            </div>
+            <div class="alert alert-success d-flex align-items-center mt-2" id="bestDealAlert">
+              <i class="fas fa-trophy me-2 text-warning"></i>
+              <span id="bestDealText"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DESTINATIONS -->
+<div id="destinations" class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="section-title">Popular Destinations</h2>
+    <p class="section-subtitle">Choose your dream destination and start your journey</p>
+  </div>
+  <div class="row g-4">
+    <div th:each="country : ${countries}" class="col-md-3">
+      <div class="card h-100 shadow-sm overflow-hidden">
+        <div class="position-relative">
+          <img th:src="@{'/images/' + ${country.toLowerCase()} + '.jpg'}"
+               class="card-img-top" style="height:200px; object-fit:cover;">
+          <div class="position-absolute top-0 end-0 m-2">
+            <span class="badge" style="background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">
+              <i class="fas fa-map-marker-alt me-1"></i>
+              <span th:text="${country}"></span>
+            </span>
+          </div>
+        </div>
+        <div class="card-body text-center p-3">
+          <h5 class="fw-bold mb-1" th:text="${country}">Country</h5>
+          <p class="text-muted small mb-3">Explore top destinations &amp; packages</p>
+          <a th:href="@{/country/{id}(id=${country})}" class="btn btn-primary w-100">
+            <i class="fas fa-compass me-1"></i>Explore
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHY TRAVELHUB -->
+<div style="background:#1a1a2e;" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 style="font-family:'Playfair Display',serif; color:#fff;">Why Choose TravelHub?</h2>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:2rem;">
+          <i class="fas fa-robot fa-2x mb-3" style="color:#e94560;"></i>
+          <h6 class="text-white fw-bold">AI Price Intelligence</h6>
+          <p class="small" style="color:rgba(255,255,255,0.6);">Real-time comparison across 50+ platforms</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:2rem;">
+          <i class="fas fa-shield-alt fa-2x mb-3" style="color:#f5a623;"></i>
+          <h6 class="text-white fw-bold">Secure Payments</h6>
+          <p class="small" style="color:rgba(255,255,255,0.6);">Powered by Razorpay — 100% safe & encrypted</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:2rem;">
+          <i class="fas fa-headset fa-2x mb-3" style="color:#667eea;"></i>
+          <h6 class="text-white fw-bold">24/7 Support</h6>
+          <p class="small" style="color:rgba(255,255,255,0.6);">Always here to help with your travel needs</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:2rem;">
+          <i class="fas fa-tags fa-2x mb-3" style="color:#56ab2f;"></i>
+          <h6 class="text-white fw-bold">Best Price Guarantee</h6>
+          <p class="small" style="color:rgba(255,255,255,0.6);">We match any lower price you find</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function quickSearch() {
+  const dest = document.getElementById('quickDestination').value;
+  if (!dest) { alert('Please select a destination'); return; }
+  window.location.href = '/place/' + encodeURIComponent(dest);
+}
+
+// AI Price Comparison
+const platformData = [
+  { name: 'TravelHub', multiplier: 1.0, rating: '4.9 ⭐', badge: 'best' },
+  { name: 'MakeMyTrip', multiplier: 1.12, rating: '4.5 ⭐', badge: '' },
+  { name: 'Yatra', multiplier: 1.18, rating: '4.3 ⭐', badge: '' },
+  { name: 'Cleartrip', multiplier: 1.09, rating: '4.4 ⭐', badge: '' },
+  { name: 'Booking.com', multiplier: 1.22, rating: '4.6 ⭐', badge: '' },
+  { name: 'Expedia', multiplier: 1.15, rating: '4.4 ⭐', badge: '' },
+];
+
+function runAIComparison() {
+  const sel = document.getElementById('compareDestination');
+  const people = parseInt(document.getElementById('comparePeople').value) || 1;
+  if (!sel.value) { alert('Please select a destination'); return; }
+  const basePrice = parseInt(sel.options[sel.selectedIndex].dataset.price);
+  const destName = sel.value;
+
+  document.getElementById('compareDestLabel').textContent = `Showing prices for ${destName} — ${people} traveler(s)`;
+
+  const tbody = document.getElementById('priceTableBody');
+  tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary me-2"></div>AI scanning platforms...</td></tr>';
+  document.getElementById('comparisonResult').classList.remove('d-none');
+  document.getElementById('bestDealAlert').classList.add('d-none');
+
+  setTimeout(() => {
+    tbody.innerHTML = '';
+    platformData.forEach(p => {
+      const price = Math.round(basePrice * p.multiplier);
+      const total = price * people;
+      const isBest = p.badge === 'best';
+      tbody.innerHTML += `<tr ${isBest ? 'style="background:#fff8f0;"' : ''}>
+        <td><strong>${p.name}</strong>${isBest ? ' <span class="badge bg-success ms-1">Best Deal</span>' : ''}</td>
+        <td>₹${price.toLocaleString('en-IN')}</td>
+        <td class="${isBest ? 'text-success fw-bold' : ''}">₹${total.toLocaleString('en-IN')}</td>
+        <td>${p.rating}</td>
+        <td>${isBest ? '<span class="badge bg-success">✓ Available</span>' : '<span class="badge bg-secondary">Available</span>'}</td>
+      </tr>`;
+    });
+    const savings = Math.round(basePrice * 0.22 * people);
+    document.getElementById('bestDealText').textContent =
+      `TravelHub offers the best price! You save ₹${savings.toLocaleString('en-IN')} compared to the highest competitor.`;
+    document.getElementById('bestDealAlert').classList.remove('d-none');
+  }, 1800);
+}
+</script>
+</body>
+</html>
