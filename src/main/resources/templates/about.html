@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title>About TravelHub</title></head>
+<body>
+
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,#1a1a2e,#0f3460); padding:5rem 0; text-align:center; color:#fff;">
+  <div class="container">
+    <h1 style="font-family:'Playfair Display',serif; font-size:3rem;">About TravelHub</h1>
+    <p style="color:rgba(255,255,255,0.7); font-size:1.1rem; max-width:600px; margin:1rem auto 0;">
+      Your AI-powered travel companion, making world exploration accessible and affordable for everyone.
+    </p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row align-items-center g-5 mb-5">
+    <div class="col-md-6">
+      <span class="badge-ai mb-3 d-inline-block"><i class="fas fa-robot me-1"></i>AI-Powered</span>
+      <h2 class="section-title mb-3">Our Mission</h2>
+      <p class="text-muted">TravelHub was built with one goal: to make travel planning effortless and affordable. Our AI engine scans 50+ travel platforms in real-time to guarantee you the best prices on every booking.</p>
+      <p class="text-muted">From the snow-capped peaks of Kashmir to the bustling streets of New York, we curate premium travel experiences with transparent pricing and zero hidden fees.</p>
+    </div>
+    <div class="col-md-6">
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="card shadow-sm p-4 text-center">
+            <div style="font-size:2.5rem; font-weight:700; color:#e94560;">10K+</div>
+            <div class="text-muted small">Happy Travelers</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card shadow-sm p-4 text-center">
+            <div style="font-size:2.5rem; font-weight:700; color:#f5a623;">50+</div>
+            <div class="text-muted small">Destinations</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card shadow-sm p-4 text-center">
+            <div style="font-size:2.5rem; font-weight:700; color:#667eea;">100+</div>
+            <div class="text-muted small">Tour Packages</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card shadow-sm p-4 text-center">
+            <div style="font-size:2.5rem; font-weight:700; color:#56ab2f;">4.9★</div>
+            <div class="text-muted small">Average Rating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-12 text-center mb-2">
+      <h2 class="section-title">Why TravelHub?</h2>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-4 h-100 text-center">
+        <div style="width:64px; height:64px; background:#fff0f3; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <i class="fas fa-robot fa-2x" style="color:#e94560;"></i>
+        </div>
+        <h5 class="fw-bold">AI Price Intelligence</h5>
+        <p class="text-muted small">Our AI scans 50+ platforms every 15 minutes to ensure you always get the best deal available.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-4 h-100 text-center">
+        <div style="width:64px; height:64px; background:#fff8e1; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <i class="fas fa-shield-alt fa-2x" style="color:#f5a623;"></i>
+        </div>
+        <h5 class="fw-bold">Secure &amp; Trusted</h5>
+        <p class="text-muted small">All payments are processed through Razorpay with bank-grade encryption and fraud protection.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-4 h-100 text-center">
+        <div style="width:64px; height:64px; background:#f0f4ff; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <i class="fas fa-headset fa-2x" style="color:#667eea;"></i>
+        </div>
+        <h5 class="fw-bold">24/7 Support</h5>
+        <p class="text-muted small">Our dedicated travel experts are available around the clock to assist with any queries.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <a th:href="@{/home}" class="btn btn-primary btn-lg px-5">
+      <i class="fas fa-compass me-2"></i>Start Exploring
+    </a>
+  </div>
+</div>
+</body>
+</html>

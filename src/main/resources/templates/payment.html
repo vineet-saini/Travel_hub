@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title},~{::body})}">
+
+<head>
+<title>Payment</title>
+</head>
+
+<body>
+
+<div class="text-center mb-4">
+<h1 class="text-warning fw-bold">
+<i class="fas fa-credit-card"></i> Payment
+</h1>
+<p class="text-muted">
+Pay for your trip to <strong th:text="${place}">Place</strong>
+</p>
+</div>
+
+<div class="row justify-content-center">
+<div class="col-md-6">
+
+<div class="card shadow border-0 p-4">
+
+<h5 class="mb-3">Select Payment Method</h5>
+
+<select class="form-select mb-3" required>
+<option value="">Choose Method</option>
+<option>Credit / Debit Card</option>
+<option>UPI</option>
+<option>Net Banking</option>
+</select>
+
+<input type="text" class="form-control mb-3" placeholder="Card / UPI / Account Number" required>
+<input type="text" class="form-control mb-3" placeholder="Name on Card / Account" required>
+<input type="number" class="form-control mb-3" placeholder="CVV / OTP" required>
+
+<button class="btn btn-success w-100 mb-2">
+<i class="fas fa-check"></i> Pay Now
+</button>
+
+<a th:href="@{/home}" class="btn btn-outline-secondary w-100 mt-2">
+Cancel Payment
+</a>
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title>Booking Confirmed | TravelHub</title></head>
+<body>
+<div class="container py-5" style="max-width:650px;">
+  <div class="card shadow-sm text-center p-5">
+    <div class="mb-4">
+      <div style="width:90px; height:90px; background:linear-gradient(135deg,#56ab2f,#a8e063); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+        <i class="fas fa-check fa-2x text-white"></i>
+      </div>
+      <h2 class="fw-bold" style="color:#1a1a2e;">Booking Confirmed! 🎉</h2>
+      <p class="text-muted">Your trip has been successfully booked and payment received.</p>
+    </div>
+
+    <div class="p-4 mb-4" style="background:#f8f9fc; border-radius:16px; text-align:left;">
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="text-muted small">Destination</div>
+          <div class="fw-bold" th:text="${place}">Place</div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted small">Trip ID</div>
+          <div class="fw-bold" style="color:#e94560;" th:text="${tripId}">TRV0000</div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted small">Payment Status</div>
+          <div><span class="badge bg-success">✓ Paid</span></div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted small">Booking Date</div>
+          <div class="fw-bold" th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}">Today</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert d-flex align-items-center p-3 mb-4" style="background:#fff8e1; border-radius:12px; border:none;">
+      <i class="fas fa-envelope me-2" style="color:#f5a623;"></i>
+      <span class="small">A confirmation has been saved to your account.</span>
+    </div>
+
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a th:href="@{/my-bookings}" class="btn btn-primary px-4">
+        <i class="fas fa-suitcase me-2"></i>View My Bookings
+      </a>
+      <a th:href="@{/home}" class="btn btn-outline-secondary px-4">
+        <i class="fas fa-home me-2"></i>Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

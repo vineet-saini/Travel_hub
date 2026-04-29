@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title th:text="'Book ' + ${place} + ' | TravelHub'">Book Trip</title></head>
+<body>
+<div class="container py-5" style="max-width:900px;">
+
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/home}" style="color:#e94560;">Home</a></li>
+      <li class="breadcrumb-item"><a th:href="@{/place/{p}(p=${place})}" style="color:#e94560;" th:text="${place}">Place</a></li>
+      <li class="breadcrumb-item active">Book Now</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm p-4">
+        <h4 class="fw-bold mb-1" style="color:#1a1a2e;"><i class="fas fa-user-edit me-2" style="color:#e94560;"></i>Traveller Details</h4>
+        <p class="text-muted small mb-4">Fill in your details to proceed with booking</p>
+        <form id="bookingForm">
+          <input type="hidden" id="placeInput" th:value="${place}">
+          <input type="hidden" id="pricePerPerson" th:value="${pricePerPerson}">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" id="travelerName" class="form-control"
+                     th:value="${currentUser?.fullName}" placeholder="As per ID proof" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" id="travelerEmail" class="form-control"
+                     th:value="${currentUser?.email}" placeholder="your@email.com" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone <span class="text-danger">*</span></label>
+              <input type="tel" id="travelerPhone" class="form-control"
+                     th:value="${currentUser?.phone}" placeholder="+91 XXXXX XXXXX" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Number of Travelers <span class="text-danger">*</span></label>
+              <input type="number" id="numberOfPeople" class="form-control" value="1" min="1" max="20" required oninput="updateTotal()">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Travel Date <span class="text-danger">*</span></label>
+              <input type="date" id="travelDate" class="form-control" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Special Requests</label>
+              <textarea class="form-control" rows="2" placeholder="Any dietary requirements, accessibility needs, etc."></textarea>
+            </div>
+            <!-- Booking location (auto-detected) -->
+            <div class="col-12 location-row align-items-center gap-2" style="display:none;">
+              <div class="p-2 d-flex align-items-center gap-2"
+                   style="background:#f0f4ff; border-radius:10px; font-size:0.9rem;">
+                <i class="fas fa-map-marker-alt" style="color:#667eea;"></i>
+                <span class="text-muted">Booking from:</span>
+                <span class="fw-bold" id="bookingFromLocation"></span>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card shadow-sm p-4 sticky-top" style="top:80px;">
+        <h5 class="fw-bold mb-3" style="color:#1a1a2e;">Booking Summary</h5>
+        <div class="d-flex align-items-center gap-3 mb-3 p-3" style="background:#f8f9fc; border-radius:12px;">
+          <img th:src="@{'/images/' + ${place.toLowerCase().replace(' ','')} + '.jpg'}"
+               style="width:70px; height:70px; object-fit:cover; border-radius:10px;" alt="">
+          <div>
+            <div class="fw-bold" th:text="${place}"></div>
+            <div class="text-muted small">Premium Travel Package</div>
+            <div class="d-flex gap-1 mt-1">
+              <i class="fas fa-star text-warning" style="font-size:0.75rem;"></i>
+              <i class="fas fa-star text-warning" style="font-size:0.75rem;"></i>
+              <i class="fas fa-star text-warning" style="font-size:0.75rem;"></i>
+              <i class="fas fa-star text-warning" style="font-size:0.75rem;"></i>
+              <i class="fas fa-star-half-alt text-warning" style="font-size:0.75rem;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Price per person</span>
+          <span class="fw-bold">₹<span th:text="${#numbers.formatInteger(pricePerPerson, 1, 'COMMA')}"></span></span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Travelers</span>
+          <span id="peopleDisplay">1</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Taxes &amp; Fees (5%)</span>
+          <span id="taxDisplay">₹0</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3">
+          <span class="fw-bold">Total Amount</span>
+          <span class="fw-bold fs-5" style="color:#e94560;" id="totalDisplay">₹0</span>
+        </div>
+        <div class="alert alert-success d-flex align-items-center p-2 mb-3" style="border-radius:10px; font-size:0.85rem;">
+          <i class="fas fa-shield-alt me-2"></i>Secured by Razorpay — 100% safe payment
+        </div>
+        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="initiatePayment()" id="payBtn">
+          <i class="fas fa-lock me-2"></i>Pay Securely — ₹<span id="payBtnAmount">0</span>
+        </button>
+        <p class="text-center text-muted mt-2 mb-0" style="font-size:0.8rem;">
+          <i class="fas fa-undo me-1"></i>Free cancellation within 24 hours
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script th:inline="javascript">
+  const RAZORPAY_KEY = /*[[${razorpayKeyId}]]*/ '';
+  // Use crawler price if available, else fall back to server price
+  const SERVER_PRICE = parseInt(/*[[${pricePerPerson}]]*/ '0');
+  const BASE_PRICE = parseInt(sessionStorage.getItem('travelhubPrice') || SERVER_PRICE) || SERVER_PRICE;
+
+  // Location from sessionStorage (set on place page)
+  let bookingLocation = { city: null, country: null, lat: null, lng: null };
+  try {
+    const stored = sessionStorage.getItem('userLocation');
+    if (stored) bookingLocation = JSON.parse(stored);
+  } catch(e) {}
+
+  // Show location in form
+  window.addEventListener('DOMContentLoaded', () => {
+    updateTotal();
+    if (bookingLocation.city) {
+      const locEl = document.getElementById('bookingFromLocation');
+      if (locEl) {
+        locEl.textContent = [bookingLocation.city, bookingLocation.country]
+          .filter(Boolean).join(', ');
+        locEl.closest('.location-row').style.display = 'flex';
+      }
+    }
+    // Also detect if not already set
+    if (!bookingLocation.city) detectAndStoreLocation();
+  });
+
+  function detectAndStoreLocation() {
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(d => {
+        bookingLocation = { city: d.city, country: d.country_name, lat: d.latitude, lng: d.longitude };
+        sessionStorage.setItem('userLocation', JSON.stringify(bookingLocation));
+        const locEl = document.getElementById('bookingFromLocation');
+        if (locEl) {
+          locEl.textContent = [d.city, d.country_name].filter(Boolean).join(', ');
+          locEl.closest('.location-row').style.display = 'flex';
+        }
+      }).catch(() => {});
+  }
+
+  function updateTotal() {
+    const people = parseInt(document.getElementById('numberOfPeople').value) || 1;
+    const subtotal = BASE_PRICE * people;
+    const tax = Math.round(subtotal * 0.05);
+    const total = subtotal + tax;
+    document.getElementById('peopleDisplay').textContent = people;
+    document.getElementById('taxDisplay').textContent = '₹' + tax.toLocaleString('en-IN');
+    document.getElementById('totalDisplay').textContent = '₹' + total.toLocaleString('en-IN');
+    document.getElementById('payBtnAmount').textContent = total.toLocaleString('en-IN');
+  }
+
+  updateTotal();
+
+  function initiatePayment() {
+    const name = document.getElementById('travelerName').value.trim();
+    const email = document.getElementById('travelerEmail').value.trim();
+    const phone = document.getElementById('travelerPhone').value.trim();
+    const people = parseInt(document.getElementById('numberOfPeople').value);
+    const date = document.getElementById('travelDate').value;
+    const place = document.getElementById('placeInput').value;
+
+    if (!name || !email || !phone || !date) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    const subtotal = BASE_PRICE * people;
+    const tax = Math.round(subtotal * 0.05);
+    const total = subtotal + tax;
+
+    document.getElementById('payBtn').disabled = true;
+    document.getElementById('payBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+    fetch('/api/payment/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        place, country: '', travelerName: name, travelerEmail: email,
+        travelerPhone: phone, numberOfPeople: people, travelDate: date,
+        pricePerPerson: total / people,
+        bookingCity: bookingLocation.city,
+        bookingCountry: bookingLocation.country,
+        bookingLat: bookingLocation.lat,
+        bookingLng: bookingLocation.lng
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { alert('Error: ' + data.error); resetBtn(); return; }
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'TravelHub',
+        description: 'Trip to ' + place,
+        order_id: data.orderId,
+        prefill: { name, email, contact: phone },
+        theme: { color: '#e94560' },
+        handler: function(response) {
+          fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(response)
+          })
+          .then(r => r.json())
+          .then(res => {
+            if (res.status === 'success') {
+              window.location.href = '/booking-success?tripId=' + res.tripId + '&place=' + encodeURIComponent(place);
+            } else {
+              alert('Payment verification failed. Please contact support.');
+              resetBtn();
+            }
+          });
+        },
+        modal: { ondismiss: resetBtn }
+      };
+      new Razorpay(options).open();
+    })
+    .catch(() => { alert('Something went wrong. Please try again.'); resetBtn(); });
+  }
+
+  function resetBtn() {
+    const btn = document.getElementById('payBtn');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Securely — ₹<span id="payBtnAmount">' +
+      document.getElementById('totalDisplay').textContent.replace('₹','') + '</span>';
+  }
+</script>
+</body>
+</html>
