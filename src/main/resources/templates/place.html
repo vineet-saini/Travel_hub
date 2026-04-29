@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title th:text="${place} + ' Packages | TravelHub'">Packages</title></head>
+<body>
+<div class="container py-5">
+
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/home}" style="color:#e94560;">Home</a></li>
+      <li class="breadcrumb-item active" th:text="${place}">Place</li>
+    </ol>
+  </nav>
+
+  <!-- Hero -->
+  <div class="position-relative mb-5 rounded overflow-hidden shadow">
+    <img th:src="@{'/images/' + ${place.toLowerCase().replace(' ','')} + '.jpg'}"
+         style="width:100%; height:380px; object-fit:cover;" alt="">
+    <div style="position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%);"></div>
+    <div style="position:absolute; bottom:2rem; left:2rem; color:#fff;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2.8rem; font-weight:700;" th:text="${place}"></h1>
+      <div class="d-flex align-items-center gap-3">
+        <span><i class="fas fa-star text-warning me-1"></i>4.8 (2,341 reviews)</span>
+        <span><i class="fas fa-map-marker-alt me-1"></i>Premium Destination</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT: Itinerary -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header p-3" style="background:#1a1a2e; border-radius:16px 16px 0 0;">
+          <h5 class="mb-0 text-white"><i class="fas fa-calendar-alt me-2" style="color:#f5a623;"></i>Travel Itinerary</h5>
+        </div>
+        <div class="card-body p-4">
+          <pre style="white-space:pre-wrap; font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.8; color:#444;"
+               th:text="${packageContent}">Package details...</pre>
+        </div>
+      </div>
+
+      <!-- What's Included -->
+      <div class="card shadow-sm p-4">
+        <h5 class="fw-bold mb-3" style="color:#1a1a2e;"><i class="fas fa-check-circle me-2" style="color:#56ab2f;"></i>What's Included</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-hotel" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">Hotel accommodation (3-4 star)</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-utensils" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">Daily breakfast &amp; dinner</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-bus" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">All transfers &amp; transport</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-user-tie" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">Expert local guide</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-ticket-alt" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">All sightseeing entry fees</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 p-2" style="background:#f8fff8; border-radius:10px;">
+              <i class="fas fa-undo" style="color:#56ab2f; width:20px;"></i>
+              <span class="small">Free cancellation within 24h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Booking card -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm sticky-top" style="top:80px;">
+        <div class="card-header text-center p-3" style="background:#e94560; border-radius:16px 16px 0 0;">
+          <h5 class="mb-0 text-white"><i class="fas fa-tags me-2"></i>Book This Package</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <div class="text-muted small">Starting from</div>
+            <div style="font-size:2.2rem; font-weight:700; color:#e94560;">
+              ₹<span th:text="${#numbers.formatInteger(pricePerPerson, 1, 'COMMA')}"></span>
+            </div>
+            <div class="text-muted small">per person · all inclusive</div>
+          </div>
+
+          <div class="d-flex gap-1 justify-content-center mb-3">
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star-half-alt text-warning"></i>
+            <span class="text-muted small ms-1">4.8 (2,341)</span>
+          </div>
+
+          <!-- Price breakdown -->
+          <div class="p-3 mb-3" style="background:#f8f9fc; border-radius:12px;">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="small text-muted">Package price</span>
+              <span class="small fw-bold">₹<span th:text="${#numbers.formatInteger(pricePerPerson, 1, 'COMMA')}"></span></span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="small text-muted">Taxes &amp; fees (5%)</span>
+              <span class="small fw-bold">₹<span th:text="${#numbers.formatInteger(pricePerPerson * 0.05, 0, 'COMMA')}"></span></span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between">
+              <span class="small fw-bold">Total per person</span>
+              <span class="small fw-bold" style="color:#e94560;">₹<span th:text="${#numbers.formatInteger(pricePerPerson * 1.05, 0, 'COMMA')}"></span></span>
+            </div>
+          </div>
+
+          <div class="alert alert-success d-flex align-items-center p-2 mb-3" style="border-radius:10px; border:none; font-size:0.82rem;">
+            <i class="fas fa-shield-alt me-2"></i>Secured by Razorpay · 100% safe
+          </div>
+
+          <a th:href="@{/booking/traveller/{place}(place=${place})}" class="btn btn-primary w-100 py-3 fw-bold mb-2">
+            <i class="fas fa-lock me-2"></i>Book Now — Secure Payment
+          </a>
+          <a th:href="@{/home}" class="btn btn-outline-secondary w-100">
+            <i class="fas fa-arrow-left me-2"></i>Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

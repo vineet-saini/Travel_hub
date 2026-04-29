@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title th:text="'Booking ' + ${booking?.tripId} + ' | TravelHub'">Booking Detail</title></head>
+<body>
+<div class="container py-5" style="max-width:900px;">
+
+  <!-- Not found -->
+  <div th:if="${booking == null}" class="text-center py-5">
+    <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+    <h4 class="fw-bold">Booking not found</h4>
+    <p class="text-muted">This booking doesn't exist or you don't have permission to view it.</p>
+    <a th:href="@{/my-bookings}" class="btn btn-primary">Back to My Bookings</a>
+  </div>
+
+  <div th:if="${booking != null}">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a th:href="@{/home}" style="color:#e94560;">Home</a></li>
+        <li class="breadcrumb-item"><a th:href="@{/my-bookings}" style="color:#e94560;">My Bookings</a></li>
+        <li class="breadcrumb-item active" th:text="${booking.tripId}">Trip ID</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+      <div>
+        <h3 class="fw-bold mb-1" style="color:#1a1a2e;">Booking Details</h3>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">Trip ID:</span>
+          <code style="background:#f0f4ff; padding:2px 10px; border-radius:6px; color:#667eea; font-weight:600;"
+                th:text="${booking.tripId}"></code>
+          <span th:class="${booking.paymentStatus == 'PAID'} ? 'badge bg-success' :
+                           (${booking.paymentStatus == 'PENDING'} ? 'badge bg-warning text-dark' : 'badge bg-danger')"
+                th:text="${booking.paymentStatus}"></span>
+        </div>
+      </div>
+      <a th:href="@{/my-bookings}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+      </a>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- LEFT COLUMN -->
+      <div class="col-lg-8">
+
+        <!-- Destination Card -->
+        <div class="card shadow-sm mb-4 overflow-hidden">
+          <div class="position-relative">
+            <img th:src="@{'/images/' + ${booking.place.toLowerCase().replace(' ','')} + '.jpg'}"
+                 style="width:100%; height:200px; object-fit:cover;" alt="">
+            <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%);"></div>
+            <div style="position:absolute; bottom:1.5rem; left:1.5rem; color:#fff;">
+              <h4 class="fw-bold mb-0" th:text="${booking.place}">Place</h4>
+              <span class="small" style="color:rgba(255,255,255,0.8);">Premium Travel Package</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traveller Info -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header p-3" style="background:#1a1a2e; border-radius:16px 16px 0 0;">
+            <h6 class="mb-0 text-white"><i class="fas fa-user me-2" style="color:#f5a623;"></i>Traveller Information</h6>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-user me-2"></i>Full Name</div>
+                  <div class="fw-bold" th:text="${booking.travelerName}">Name</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-envelope me-2"></i>Email</div>
+                  <div class="fw-bold" th:text="${booking.travelerEmail}">Email</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-phone me-2"></i>Phone</div>
+                  <div class="fw-bold" th:text="${booking.travelerPhone}">Phone</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-users me-2"></i>Number of Travelers</div>
+                  <div class="fw-bold" th:text="${booking.numberOfPeople} + ' person(s)'">1</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-calendar me-2"></i>Travel Date</div>
+                  <div class="fw-bold" th:text="${#temporals.format(booking.travelDate, 'dd MMMM yyyy')}">Date</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-clock me-2"></i>Booked On</div>
+                  <div class="fw-bold" th:text="${#temporals.format(booking.bookedAt, 'dd MMM yyyy, hh:mm a')}">Date</div>
+                </div>
+              </div>
+              <div class="col-md-6" th:if="${booking.bookingCity != null}">
+                <div class="p-3" style="background:#f0f4ff; border-radius:12px;">
+                  <div class="text-muted small mb-1"><i class="fas fa-map-marker-alt me-2" style="color:#667eea;"></i>Booked From</div>
+                  <div class="fw-bold">
+                    <span th:text="${booking.bookingCity}"></span>
+                    <span th:if="${booking.bookingCountry != null}">, <span th:text="${booking.bookingCountry}"></span></span>
+                  </div>
+                  <div class="text-muted" style="font-size:0.75rem;"
+                       th:if="${booking.bookingLat != null}"
+                       th:text="${#numbers.formatDecimal(booking.bookingLat,1,4)} + '°, ' + ${#numbers.formatDecimal(booking.bookingLng,1,4)} + '°'"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="card shadow-sm">
+          <div class="card-header p-3" style="background:#1a1a2e; border-radius:16px 16px 0 0;">
+            <h6 class="mb-0 text-white"><i class="fas fa-credit-card me-2" style="color:#f5a623;"></i>Payment Information</h6>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1">Payment Status</div>
+                  <span th:class="${booking.paymentStatus == 'PAID'} ? 'badge bg-success fs-6' :
+                                   (${booking.paymentStatus == 'PENDING'} ? 'badge bg-warning text-dark fs-6' : 'badge bg-danger fs-6')"
+                        th:text="${booking.paymentStatus}"></span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1">Payment Gateway</div>
+                  <div class="fw-bold d-flex align-items-center gap-2">
+                    <i class="fas fa-shield-alt text-success"></i> Razorpay
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6" th:if="${booking.razorpayOrderId != null}">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1">Razorpay Order ID</div>
+                  <div class="fw-bold" style="font-size:0.85rem; word-break:break-all;" th:text="${booking.razorpayOrderId}"></div>
+                </div>
+              </div>
+              <div class="col-md-6" th:if="${booking.razorpayPaymentId != null}">
+                <div class="p-3" style="background:#f8f9fc; border-radius:12px;">
+                  <div class="text-muted small mb-1">Razorpay Payment ID</div>
+                  <div class="fw-bold" style="font-size:0.85rem; word-break:break-all;" th:text="${booking.razorpayPaymentId}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Price Summary -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top:80px;">
+          <div class="card-header text-center p-3" style="background:#e94560; border-radius:16px 16px 0 0;">
+            <h6 class="mb-0 text-white"><i class="fas fa-receipt me-2"></i>Price Breakdown</h6>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Price per person</span>
+              <span class="fw-bold">₹<span th:text="${#numbers.formatInteger(pricePerPerson, 1, 'COMMA')}"></span></span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Travelers</span>
+              <span class="fw-bold" th:text="${booking.numberOfPeople}">1</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Subtotal</span>
+              <span class="fw-bold">₹<span th:text="${#numbers.formatInteger(pricePerPerson * booking.numberOfPeople, 0, 'COMMA')}"></span></span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Taxes &amp; Fees (5%)</span>
+              <span class="fw-bold">₹<span th:text="${#numbers.formatInteger(booking.totalAmount - (pricePerPerson * booking.numberOfPeople), 0, 'COMMA')}"></span></span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-4">
+              <span class="fw-bold fs-6">Total Paid</span>
+              <span class="fw-bold fs-5" style="color:#e94560;">
+                ₹<span th:text="${#numbers.formatInteger(booking.totalAmount, 1, 'COMMA')}"></span>
+              </span>
+            </div>
+
+            <!-- Status indicator -->
+            <div th:if="${booking.paymentStatus == 'PAID'}"
+                 class="alert alert-success d-flex align-items-center p-3 mb-3" style="border-radius:12px; border:none;">
+              <i class="fas fa-check-circle me-2"></i>
+              <span class="small">Payment confirmed &amp; booking active</span>
+            </div>
+            <div th:if="${booking.paymentStatus == 'PENDING'}"
+                 class="alert alert-warning d-flex align-items-center p-3 mb-3" style="border-radius:12px; border:none;">
+              <i class="fas fa-clock me-2"></i>
+              <span class="small">Payment pending — complete to confirm</span>
+            </div>
+
+            <a th:href="@{/place/{p}(p=${booking.place})}" class="btn btn-outline-primary w-100 mb-2">
+              <i class="fas fa-suitcase-rolling me-2"></i>View Package
+            </a>
+            <a th:href="@{/my-bookings}" class="btn btn-outline-secondary w-100">
+              <i class="fas fa-list me-2"></i>All Bookings
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -6,7 +6,7 @@
 
 <!-- HERO -->
 <div class="hero-section position-relative overflow-hidden"
-     style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 88vh; display:flex; align-items:center;">
+     style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 92vh; display:flex; align-items:center;">
   <div class="hero-bg-overlay position-absolute w-100 h-100"
        style="background: url('/images/travel-banner.jpg') center/cover no-repeat; opacity:0.2; top:0; left:0;"></div>
   <div class="container position-relative py-5">
@@ -94,8 +94,131 @@
   </div>
 </div>
 
+<!-- AI TRIP OPTIMIZER -->
+<div id="ai-optimizer" class="py-5" style="background: linear-gradient(135deg, #f0f4ff 0%, #faf0ff 100%);">  
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="badge-ai mb-2 d-inline-block"><i class="fas fa-magic me-1"></i> AI Feature</span>
+      <h2 class="section-title">AI Trip Optimizer</h2>
+      <p class="section-subtitle">Enter your destinations and get a smart day-wise itinerary in seconds</p>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow" style="border-radius:20px; overflow:hidden;">
+
+          <!-- Tab bar -->
+          <div class="d-flex align-items-center justify-content-between px-4 py-3"
+               style="background:#1a1a2e;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fas fa-robot" style="color:#e94560;"></i>
+              <span class="text-white fw-bold" style="font-size:0.95rem;">Plan Your Trip with AI</span>
+            </div>
+            <a th:href="@{/trip-optimizer}"
+               style="color:rgba(255,255,255,0.5); font-size:0.82rem; text-decoration:none;">
+              <i class="fas fa-expand-alt me-1"></i>Full Page
+            </a>
+          </div>
+
+          <!-- Inputs -->
+          <div class="p-4" style="background:#fff;">
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-3">
+                <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                <input type="date" id="ho_dateStart" class="form-control">
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <label class="form-label">End Date <span class="text-danger">*</span></label>
+                <input type="date" id="ho_dateEnd" class="form-control">
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <label class="form-label">Starting From <span class="text-danger">*</span></label>
+                <input type="text" id="ho_start" class="form-control" placeholder="e.g. Mumbai">
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <label class="form-label">Travel Style</label>
+                <select id="ho_style" class="form-select">
+                  <option value="balanced">⚖️ Balanced</option>
+                  <option value="budget">💰 Budget</option>
+                  <option value="luxury">✨ Luxury</option>
+                  <option value="fast-paced">⚡ Fast-paced</option>
+                  <option value="relaxed">🌿 Relaxed</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Places to Visit <span class="text-danger">*</span></label>
+                <input type="text" id="ho_places" class="form-control"
+                       placeholder="e.g. Delhi, Agra, Jaipur, Udaipur">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Budget <span class="text-muted small">(optional)</span></label>
+                <input type="text" id="ho_budget" class="form-control" placeholder="e.g. ₹50,000">
+              </div>
+              <div class="col-12 d-flex align-items-center gap-3 flex-wrap">
+                <span id="ho_duration" class="small fw-bold"></span>
+                <button class="btn btn-primary px-4 py-2 fw-bold" onclick="hoOptimize()" id="ho_btn">
+                  <i class="fas fa-magic me-2"></i>Optimize My Trip
+                </button>
+                <span class="text-muted small">
+                  <i class="fas fa-bolt me-1" style="color:#f5a623;"></i>Powered by Groq AI · ~5 seconds
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div id="ho_loading" class="d-none px-4 pb-4" style="background:#fff;">
+            <div class="p-4 text-center" style="background:#f8f9fc; border-radius:12px;">
+              <div class="spinner-border text-primary mb-3" style="width:2rem;height:2rem;"></div>
+              <div class="fw-bold" style="color:#1a1a2e;">AI is optimizing your trip...</div>
+              <div class="text-muted small mt-1" id="ho_step">Analyzing destinations...</div>
+              <div class="progress mt-3" style="height:4px; border-radius:10px; max-width:360px; margin:0 auto;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated w-100"
+                     style="background:linear-gradient(90deg,#667eea,#e94560);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error -->
+          <div id="ho_error" class="d-none px-4 pb-4" style="background:#fff;">
+            <div class="alert alert-danger d-flex align-items-start gap-2 mb-0"
+                 style="border-radius:12px; border:none;">
+              <i class="fas fa-exclamation-circle mt-1"></i>
+              <div><div class="fw-bold small">Failed</div>
+              <div class="small" id="ho_errMsg"></div></div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div id="ho_result" class="d-none" style="background:#f8f9fc; border-top:1px solid #eee;">
+            <div class="d-flex align-items-center justify-content-between px-4 pt-3 pb-2 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge-ai"><i class="fas fa-check-circle me-1"></i>Done</span>
+                <span class="text-muted small" id="ho_meta"></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="hoCopy()">
+                  <i class="fas fa-copy me-1"></i>Copy
+                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="hoReset()">
+                  <i class="fas fa-redo me-1"></i>Reset
+                </button>
+                <a th:href="@{/trip-optimizer}" class="btn btn-sm btn-outline-dark">
+                  <i class="fas fa-expand-alt me-1"></i>Full View
+                </a>
+              </div>
+            </div>
+            <div id="ho_content" class="px-4 pb-4"
+                 style="max-height:480px; overflow-y:auto; font-size:0.92rem; line-height:1.8;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- AI PRICE COMPARISON -->
-<div id="ai-compare" class="py-5" style="background: linear-gradient(135deg, #667eea15, #764ba215);">
+<div id="ai-compare" class="py-5" style="background: linear-gradient(135deg, #eef2ff 0%, #f5eeff 100%);">  
   <div class="container">
     <div class="text-center mb-4">
       <span class="badge-ai mb-2 d-inline-block"><i class="fas fa-robot me-1"></i> AI Feature</span>
@@ -160,7 +283,8 @@
 </div>
 
 <!-- DESTINATIONS -->
-<div id="destinations" class="container py-5">
+<div id="destinations" class="py-5" style="background:#fff;">
+<div class="container">
   <div class="text-center mb-5">
     <h2 class="section-title">Popular Destinations</h2>
     <p class="section-subtitle">Choose your dream destination and start your journey</p>
@@ -188,6 +312,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- WHY TRAVELHUB -->
@@ -230,6 +355,135 @@
 </div>
 
 <script>
+// ── Home Optimizer (between hero and price comparison) ─────────────────────
+const hoSteps = [
+  'Analyzing your destinations...',
+  'Calculating optimal route...',
+  'Building day-wise schedule...',
+  'Identifying cost savings...',
+  'Finalizing itinerary...'
+];
+
+const hoToday = new Date().toISOString().split('T')[0];
+document.getElementById('ho_dateStart').min = hoToday;
+document.getElementById('ho_dateEnd').min = hoToday;
+document.getElementById('ho_dateStart').addEventListener('change', function() {
+  document.getElementById('ho_dateEnd').min = this.value;
+  hoUpdateDuration();
+});
+document.getElementById('ho_dateEnd').addEventListener('change', hoUpdateDuration);
+
+function hoUpdateDuration() {
+  const s = document.getElementById('ho_dateStart').value;
+  const e = document.getElementById('ho_dateEnd').value;
+  const el = document.getElementById('ho_duration');
+  if (s && e && new Date(e) >= new Date(s)) {
+    const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+    el.textContent = `✔ ${days} day${days > 1 ? 's' : ''} trip`;
+    el.style.color = '#56ab2f';
+  } else if (s && e) {
+    el.textContent = '⚠ End date must be after start date';
+    el.style.color = '#e94560';
+  } else {
+    el.textContent = '';
+  }
+}
+
+function hoOptimize() {
+  const dateStart = document.getElementById('ho_dateStart').value;
+  const dateEnd   = document.getElementById('ho_dateEnd').value;
+  const places    = document.getElementById('ho_places').value.trim();
+  const start     = document.getElementById('ho_start').value.trim();
+  const budget    = document.getElementById('ho_budget').value.trim();
+  const style     = document.getElementById('ho_style').value;
+
+  if (!dateStart || !dateEnd || !places || !start) {
+    alert('Please fill in Start Date, End Date, Places to Visit, and Starting From.');
+    return;
+  }
+  if (new Date(dateEnd) < new Date(dateStart)) {
+    alert('End date must be after start date.'); return;
+  }
+
+  const fmt  = d => new Date(d).toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'});
+  const dates = fmt(dateStart) + ' to ' + fmt(dateEnd);
+  const days  = Math.round((new Date(dateEnd) - new Date(dateStart)) / 86400000) + 1;
+
+  document.getElementById('ho_error').classList.add('d-none');
+  document.getElementById('ho_result').classList.add('d-none');
+  document.getElementById('ho_loading').classList.remove('d-none');
+
+  const btn = document.getElementById('ho_btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Optimizing...';
+
+  let step = 0;
+  const timer = setInterval(() => {
+    if (step < hoSteps.length) document.getElementById('ho_step').textContent = hoSteps[step++];
+  }, 1800);
+
+  const t0 = Date.now();
+  fetch('/api/optimizer/optimize', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({dates, places, startLocation: start, budget, style})
+  })
+  .then(r => r.json())
+  .then(data => {
+    clearInterval(timer);
+    document.getElementById('ho_loading').classList.add('d-none');
+    if (data.error) {
+      document.getElementById('ho_error').classList.remove('d-none');
+      document.getElementById('ho_errMsg').textContent = data.error;
+    } else {
+      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+      document.getElementById('ho_meta').textContent = `${days} days · ${style} · ${elapsed}s`;
+      hoRenderResult(data.result);
+      document.getElementById('ho_result').classList.remove('d-none');
+      document.getElementById('ho_result').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  })
+  .catch(() => {
+    clearInterval(timer);
+    document.getElementById('ho_loading').classList.add('d-none');
+    document.getElementById('ho_error').classList.remove('d-none');
+    document.getElementById('ho_errMsg').textContent = 'Network error. Please try again.';
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic me-2"></i>Optimize My Trip';
+  });
+}
+
+function hoRenderResult(markdown) {
+  marked.setOptions({breaks: true, gfm: true});
+  let html = marked.parse(markdown);
+  html = html
+    .replace(/<h2>/g, '<h5 class="fw-bold mt-4 mb-2" style="color:#1a1a2e;border-left:4px solid #e94560;padding-left:10px;">')
+    .replace(/<\/h2>/g, '</h5>')
+    .replace(/<h3>/g, '<h6 class="fw-bold mt-3 mb-1" style="color:#e94560;">')
+    .replace(/<\/h3>/g, '</h6>')
+    .replace(/<ul>/g, '<ul class="ps-3">')
+    .replace(/<li>/g, '<li class="mb-1">');
+  document.getElementById('ho_content').innerHTML = html;
+}
+
+function hoCopy() {
+  navigator.clipboard.writeText(document.getElementById('ho_content').innerText).then(() => {
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy me-1"></i>Copy', 2000);
+  });
+}
+
+function hoReset() {
+  document.getElementById('ho_result').classList.add('d-none');
+  document.getElementById('ho_error').classList.add('d-none');
+  ['ho_dateStart','ho_dateEnd','ho_places','ho_start','ho_budget'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ho_style').value = 'balanced';
+  document.getElementById('ho_duration').textContent = '';
+}
+
 function quickSearch() {
   const dest = document.getElementById('quickDestination').value;
   if (!dest) { alert('Please select a destination'); return; }
@@ -281,5 +535,6 @@ function runAIComparison() {
   }, 1800);
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>

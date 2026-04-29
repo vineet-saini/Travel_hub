@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title,content)">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:replace="${title}">TravelHub</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --light-bg: #f8f9fc;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--light-bg); color: #333; }
+
+  /* NAVBAR */
+  .navbar { background: var(--primary) !important; padding: 0.9rem 0; box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+  .navbar-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #fff !important; letter-spacing: 1px; }
+  .navbar-brand span { color: var(--accent); }
+  .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem !important; border-radius: 6px; transition: all 0.2s; }
+  .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.1); }
+  .nav-link.active { color: var(--gold) !important; }
+  .btn-nav-accent { background: var(--accent); color: #fff !important; border-radius: 20px; padding: 0.4rem 1.2rem !important; font-weight: 600; }
+  .btn-nav-accent:hover { background: #c73652; }
+  .dropdown-menu { border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border-radius: 12px; padding: 0.5rem; }
+  .dropdown-item { border-radius: 8px; padding: 0.6rem 1rem; font-size: 0.9rem; }
+  .dropdown-item:hover { background: #f0f4ff; color: var(--accent); }
+  .avatar-circle { width: 34px; height: 34px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.85rem; }
+
+  /* CARDS */
+  .card { border: none; border-radius: 16px; transition: transform 0.25s, box-shadow 0.25s; }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.12) !important; }
+  .card-img-top { border-radius: 16px 16px 0 0; }
+
+  /* BUTTONS */
+  .btn-primary { background: var(--accent); border-color: var(--accent); border-radius: 8px; font-weight: 600; }
+  .btn-primary:hover { background: #c73652; border-color: #c73652; }
+  .btn-outline-primary { border-color: var(--accent); color: var(--accent); border-radius: 8px; font-weight: 600; }
+  .btn-outline-primary:hover { background: var(--accent); border-color: var(--accent); }
+
+  /* SECTION TITLES */
+  .section-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary); }
+  .section-subtitle { color: #888; font-size: 1rem; }
+
+  /* BADGE */
+  .badge-ai { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; }
+
+  /* FOOTER */
+  footer { background: var(--primary); color: #aaa; }
+  footer h6 { color: #fff; font-weight: 600; margin-bottom: 1rem; }
+  footer a { color: #aaa; text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--gold); }
+  .footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; color: #fff; margin-right: 8px; transition: background 0.2s; }
+  .footer-social a:hover { background: var(--accent); }
+
+  /* ALERTS */
+  .alert { border-radius: 10px; border: none; }
+
+  /* FORM CONTROLS */
+  .form-control, .form-select { border-radius: 10px; border: 1.5px solid #e0e0e0; padding: 0.65rem 1rem; font-size: 0.95rem; transition: border-color 0.2s; }
+  .form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(233,69,96,0.1); }
+  .form-label { font-weight: 500; font-size: 0.9rem; color: #555; margin-bottom: 0.4rem; }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/home}">
+      <i class="fas fa-compass me-2"></i>Travel<span>Hub</span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto ms-3">
+        <li class="nav-item"><a class="nav-link" th:href="@{/home}"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/trip-optimizer}"><i class="fas fa-route me-1"></i>AI Optimizer</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/about}"><i class="fas fa-info-circle me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/contact}"><i class="fas fa-envelope me-1"></i>Contact</a></li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <!-- Logged in -->
+        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+            <div class="avatar-circle" sec:authentication="name" id="avatarInitial">U</div>
+            <span class="text-white" sec:authentication="name"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user me-2 text-muted"></i>My Profile</a></li>
+            <li><a class="dropdown-item" th:href="@{/my-bookings}"><i class="fas fa-suitcase me-2 text-muted"></i>My Bookings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form th:action="@{/logout}" method="post">
+                <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+              </form>
+            </li>
+          </ul>
+        </li>
+        <!-- Not logged in -->
+        <li class="nav-item" sec:authorize="!isAuthenticated()">
+          <a class="nav-link" th:href="@{/login}">Login</a>
+        </li>
+        <li class="nav-item" sec:authorize="!isAuthenticated()">
+          <a class="nav-link btn-nav-accent" th:href="@{/signup}">Sign Up</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div th:insert="${content}"></div>
+
+<footer class="pt-5 pb-4 mt-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h6><i class="fas fa-compass me-2"></i>TravelHub</h6>
+        <p class="small">Your AI-powered travel companion. Discover the world's most beautiful destinations with the best prices guaranteed.</p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <h6>Explore</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a th:href="@{/country/India}">India</a></li>
+          <li class="mb-1"><a th:href="@{/country/US}">United States</a></li>
+          <li class="mb-1"><a th:href="@{/country/Canada}">Canada</a></li>
+          <li class="mb-1"><a th:href="@{/country/UK}">United Kingdom</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h6>Company</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a th:href="@{/about}">About Us</a></li>
+          <li class="mb-1"><a th:href="@{/contact}">Contact</a></li>
+          <li class="mb-1"><a href="#">Privacy Policy</a></li>
+          <li class="mb-1"><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6>Contact Us</h6>
+        <p class="small mb-1"><i class="fas fa-envelope me-2"></i>support@travelhub.com</p>
+        <p class="small mb-1"><i class="fas fa-phone me-2"></i>+91-9015409405</p>
+        <p class="small"><i class="fas fa-map-marker-alt me-2"></i>New Delhi, India</p>
+      </div>
+    </div>
+    <hr style="border-color: rgba(255,255,255,0.1);" class="mt-4">
+    <p class="text-center small mb-0">© 2026 TravelHub. All rights reserved. | Powered by AI Price Intelligence</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ═══ TRAVELHUB CHATBOT ══════════════════════════════════════════════════ -->
+<style>
+  #chatToggle {
+    position:fixed; bottom:28px; right:28px; z-index:9999;
+    width:58px; height:58px; border-radius:50%;
+    background:linear-gradient(135deg,#e94560,#c73652);
+    border:none; box-shadow:0 4px 20px rgba(233,69,96,0.45);
+    cursor:pointer; transition:transform 0.2s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #chatToggle:hover { transform:scale(1.1); }
+  #chatToggle i { color:#fff; font-size:1.4rem; }
+  #chatBubble {
+    position:fixed; bottom:100px; right:28px; z-index:9998;
+    width:360px; max-height:520px;
+    background:#fff; border-radius:20px;
+    box-shadow:0 12px 48px rgba(0,0,0,0.18);
+    display:flex; flex-direction:column;
+    overflow:hidden; transition:all 0.3s ease;
+    transform-origin:bottom right;
+  }
+  #chatBubble.hidden { transform:scale(0.85); opacity:0; pointer-events:none; }
+  .chat-header {
+    background:linear-gradient(135deg,#1a1a2e,#0f3460);
+    padding:16px 18px; display:flex; align-items:center; gap:12px;
+  }
+  .chat-avatar {
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg,#e94560,#c73652);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; flex-shrink:0;
+  }
+  .chat-header-info .name { color:#fff; font-weight:600; font-size:0.95rem; }
+  .chat-header-info .status { color:rgba(255,255,255,0.55); font-size:0.75rem; }
+  .online-dot { width:8px; height:8px; background:#56ab2f; border-radius:50%; display:inline-block; margin-right:4px; }
+  #chatMessages {
+    flex:1; overflow-y:auto; padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+    background:#f8f9fc; max-height:320px;
+  }
+  .msg { max-width:82%; padding:10px 14px; border-radius:16px; font-size:0.875rem; line-height:1.5; word-break:break-word; }
+  .msg.bot { background:#fff; color:#333; border-radius:16px 16px 16px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.08); align-self:flex-start; }
+  .msg.user { background:linear-gradient(135deg,#e94560,#c73652); color:#fff; border-radius:16px 16px 4px 16px; align-self:flex-end; }
+  .msg a { color:#e94560; text-decoration:underline; }
+  .msg.bot a { color:#e94560; }
+  .msg.user a { color:#fff; }
+  .quick-replies { display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 10px; }
+  .qr-btn {
+    background:#fff; border:1.5px solid #e94560; color:#e94560;
+    border-radius:20px; padding:5px 12px; font-size:0.78rem;
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .qr-btn:hover { background:#e94560; color:#fff; }
+  .chat-input-row {
+    display:flex; gap:8px; padding:12px 14px;
+    border-top:1px solid #eee; background:#fff;
+  }
+  .chat-input-row input {
+    flex:1; border:1.5px solid #e0e0e0; border-radius:20px;
+    padding:8px 14px; font-size:0.875rem; outline:none;
+    transition:border-color 0.2s;
+  }
+  .chat-input-row input:focus { border-color:#e94560; }
+  .chat-send {
+    width:38px; height:38px; border-radius:50%;
+    background:#e94560; border:none; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; transition:background 0.2s;
+  }
+  .chat-send:hover { background:#c73652; }
+  .typing { display:flex; gap:4px; align-items:center; padding:10px 14px; }
+  .typing span { width:7px; height:7px; background:#ccc; border-radius:50%; animation:bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay:0.2s; }
+  .typing span:nth-child(3) { animation-delay:0.4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  @media(max-width:480px) { #chatBubble{width:calc(100vw - 32px); right:16px; bottom:90px;} #chatToggle{right:16px; bottom:16px;} }
+</style>
+
+<!-- Chat toggle button -->
+<button id="chatToggle" onclick="toggleChat()" title="Chat with TravelHub Assistant">
+  <i class="fas fa-comments" id="chatIcon"></i>
+</button>
+
+<!-- Chat window -->
+<div id="chatBubble" class="hidden">
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="name">TravelHub Assistant</div>
+      <div class="status"><span class="online-dot"></span>Online · AI-powered</div>
+    </div>
+    <button onclick="toggleChat()" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.1rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div id="chatMessages"></div>
+
+  <div class="quick-replies" id="quickReplies"></div>
+
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter') sendMsg()">
+    <button class="chat-send" onclick="sendMsg()"><i class="fas fa-paper-plane" style="font-size:0.85rem;"></i></button>
+  </div>
+</div>
+
+<script>
+// ── Chatbot Knowledge Base ────────────────────────────────────────────────────
+const KB = [
+  {
+    patterns: ['hello','hi','hey','hii','helo','start','help'],
+    answer: `👋 Hi there! I'm your TravelHub Assistant. I can help you with:<br><br>
+      🗺️ Exploring destinations<br>
+      📅 Booking a trip<br>
+      🤖 Using the AI Trip Optimizer<br>
+      💳 Payment & bookings<br>
+      👤 Account & profile<br><br>
+      What would you like to know?`,
+    quick: ['How to book?','AI Optimizer','My Bookings','Destinations']
+  },
+  {
+    patterns: ['my booking','view booking','booking history','past trip','my trip','view my bookings','my bookings'],
+    answer: `📂 <strong>View Your Bookings:</strong><br><br>
+      Go to <a href='/my-bookings'>My Bookings</a> to see:<br><br>
+      📋 All your trip bookings<br>
+      ✅ Payment status (Paid / Pending)<br>
+      📍 Destination & travel dates<br>
+      🧾 Razorpay payment ID<br>
+      📊 Total amount spent`,
+    quick: ['Download invoice','Cancel booking','How to book?']
+  },
+  {
+    patterns: ['how to book','book now','reserve','book a trip'],
+    answer: `📋 <strong>How to Book a Trip:</strong><br><br>
+      1️⃣ Go to <strong>Home</strong> → choose a country<br>
+      2️⃣ Select a destination (e.g. Kashmir, London)<br>
+      3️⃣ Click <strong>Book Now</strong> on the package page<br>
+      4️⃣ Fill in your traveller details<br>
+      5️⃣ Pay securely via <strong>Razorpay</strong><br>
+      6️⃣ Get a confirmation email instantly! ✅`,
+    quick: ['Payment methods','Cancel booking','View my bookings']
+  },
+  {
+    patterns: ['ai optimizer','optimizer','itinerary','optimize','plan trip','trip plan'],
+    answer: `🤖 <strong>AI Trip Optimizer</strong><br><br>
+      Our AI (powered by Groq) builds a smart day-wise itinerary for you!<br><br>
+      📍 Enter your destinations<br>
+      📅 Pick start & end dates<br>
+      💰 Set your budget (optional)<br>
+      🎯 Choose travel style<br><br>
+      The AI will optimize your route, group nearby places, and suggest cost-saving tips.<br><br>
+      👉 <a href='/trip-optimizer'>Open AI Optimizer</a>`,
+    quick: ['How accurate is AI?','Cost optimization','Route planning']
+  },
+  {
+    patterns: ['payment','pay','razorpay','upi','card','how to pay'],
+    answer: `💳 <strong>Payment Options:</strong><br><br>
+      We use <strong>Razorpay</strong> — India's most trusted payment gateway.<br><br>
+      ✅ Credit / Debit Cards<br>
+      ✅ UPI (GPay, PhonePe, Paytm)<br>
+      ✅ Net Banking<br>
+      ✅ Wallets<br><br>
+      All payments are 100% secure & encrypted. You'll receive a confirmation email after payment.`,
+    quick: ['Refund policy','Booking confirmation','Payment failed']
+  },
+  {
+    patterns: ['refund','cancel','cancellation'],
+    answer: `🔄 <strong>Cancellation & Refund:</strong><br><br>
+      ✅ <strong>Free cancellation</strong> within 24 hours of booking<br>
+      ⚠️ 50% refund if cancelled 7+ days before travel<br>
+      ❌ No refund within 48 hours of travel date<br><br>
+      To cancel, go to <a href='/my-bookings'>My Bookings</a> or contact us at support@travelhub.com`,
+    quick: ['Contact support','My Bookings','How to book?']
+  },
+
+  {
+    patterns: ['destination','where','country','india','kashmir','london','new york','toronto','shimla','agra','mumbai'],
+    answer: `🌍 <strong>Our Destinations:</strong><br><br>
+      🇮🇳 <strong>India</strong> — Kashmir, Shimla, Mumbai, Agra<br>
+      🇺🇸 <strong>USA</strong> — New York, Los Angeles, Miami<br>
+      🇨🇦 <strong>Canada</strong> — Toronto, Vancouver, Niagara<br>
+      🇬🇧 <strong>UK</strong> — London, Edinburgh, Manchester<br><br>
+      👉 <a href='/home#destinations'>Explore all destinations</a>`,
+    quick: ['Book Kashmir','Book London','AI Optimizer','Prices']
+  },
+  {
+    patterns: ['price','cost','how much','rate','package price','cheap'],
+    answer: `💰 <strong>Package Prices (per person):</strong><br><br>
+      🇮🇳 Agra — ₹12,000 | Mumbai — ₹15,000<br>
+      🇮🇳 Shimla — ₹18,000 | Kashmir — ₹25,000<br>
+      🇺🇸 New York — ₹85,000 | Miami — ₹75,000<br>
+      🇨🇦 Toronto — ₹90,000 | Niagara — ₹70,000<br>
+      🇬🇧 London — ₹95,000 | Edinburgh — ₹85,000<br><br>
+      All prices include accommodation, meals & transport. +5% taxes apply.`,
+    quick: ['How to book?','Payment methods','AI Optimizer']
+  },
+  {
+    patterns: ['profile','account','edit profile','change password','update'],
+    answer: `👤 <strong>Your Profile:</strong><br><br>
+      Go to <a href='/profile'>My Profile</a> to:<br><br>
+      ✏️ Update your full name & phone<br>
+      🔒 Change your password<br>
+      📊 View booking stats<br>
+      🚪 Logout securely<br><br>
+      Your username and email cannot be changed after signup.`,
+    quick: ['My Bookings','Change password','Contact support']
+  },
+  {
+    patterns: ['email','confirmation','notification','mail'],
+    answer: `📧 <strong>Email Notifications:</strong><br><br>
+      After every successful booking, you'll receive a confirmation email with:<br><br>
+      ✅ Trip ID & destination<br>
+      📋 Traveller details<br>
+      💳 Payment confirmation<br>
+      📅 Travel date<br>
+      💰 Total amount paid<br><br>
+      Check your spam folder if you don't see it within 5 minutes.`,
+    quick: ['How to book?','My Bookings','Contact support']
+  },
+  {
+    patterns: ['contact','support','help','phone','email us'],
+    answer: `📞 <strong>Contact TravelHub:</strong><br><br>
+      📧 support@travelhub.com<br>
+      📱 +91-9015409405<br>
+      🕐 Available 24/7<br><br>
+      Or use our <a href='/contact'>Contact Form</a> and we'll get back to you within 24 hours.`,
+    quick: ['How to book?','Refund policy','My Bookings']
+  },
+  {
+    patterns: ['signup','register','create account','new account'],
+    answer: `🆕 <strong>Create an Account:</strong><br><br>
+      1️⃣ Click <a href='/signup'>Sign Up</a><br>
+      2️⃣ Enter username, email & password<br>
+      3️⃣ Optionally add your full name & phone<br>
+      4️⃣ Login and start booking!<br><br>
+      Already have an account? <a href='/login'>Login here</a>`,
+    quick: ['How to book?','Destinations','AI Optimizer']
+  },
+  {
+    patterns: ['login','sign in','forgot password'],
+    answer: `🔐 <strong>Login to TravelHub:</strong><br><br>
+      Go to <a href='/login'>Login</a> and enter your username & password.<br><br>
+      Forgot your password? Go to <a href='/profile'>Profile</a> after logging in to change it.<br><br>
+      Don't have an account? <a href='/signup'>Sign up free</a>`,
+    quick: ['Create account','How to book?','Contact support']
+  }
+];
+
+const FALLBACK = `🤔 I'm not sure about that. Here are some things I can help with:`;
+const FALLBACK_QUICK = ['How to book?','AI Optimizer','Destinations','Contact support'];
+
+let chatOpen = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const bubble = document.getElementById('chatBubble');
+  const icon   = document.getElementById('chatIcon');
+  bubble.classList.toggle('hidden', !chatOpen);
+  icon.className = chatOpen ? 'fas fa-times' : 'fas fa-comments';
+  if (chatOpen && document.getElementById('chatMessages').children.length === 0) {
+    setTimeout(() => botMsg(KB[0].answer, KB[0].quick), 300);
+  }
+}
+
+function botMsg(text, quickReplies = []) {
+  const msgs = document.getElementById('chatMessages');
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'msg bot typing-indicator';
+  typing.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(() => {
+    msgs.removeChild(typing);
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.innerHTML = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    setQuickReplies(quickReplies);
+  }, 700);
+}
+
+function userMsg(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  setQuickReplies([]);
+}
+
+function setQuickReplies(replies) {
+  const qr = document.getElementById('quickReplies');
+  qr.innerHTML = '';
+  replies.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'qr-btn';
+    btn.textContent = r;
+    btn.onclick = () => handleInput(r);
+    qr.appendChild(btn);
+  });
+}
+
+function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  handleInput(text);
+}
+
+function handleInput(text) {
+  userMsg(text);
+  const lower = text.toLowerCase();
+  const match = KB.find(k => k.patterns.some(p => lower.includes(p)));
+  if (match) {
+    botMsg(match.answer, match.quick);
+  } else {
+    botMsg(FALLBACK, FALLBACK_QUICK);
+  }
+}
+</script>
+<script>
+  // Set avatar initial from username
+  const avatarEl = document.getElementById('avatarInitial');
+  if (avatarEl) {
+    const name = avatarEl.textContent.trim();
+    if (name) avatarEl.textContent = name.charAt(0).toUpperCase();
+  }
+</script>
+</body>
+</html>

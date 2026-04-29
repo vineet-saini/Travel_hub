@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::body})}">
+<head><title>AI Trip Optimizer | TravelHub</title></head>
+<body>
+
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); padding:3rem 0 2rem;">
+  <div class="container text-center text-white">
+    <span class="badge-ai mb-3 d-inline-block"><i class="fas fa-robot me-1"></i>Powered by GPT AI</span>
+    <h1 style="font-family:'Playfair Display',serif; font-size:2.8rem;">AI Trip Optimizer</h1>
+    <p style="color:rgba(255,255,255,0.75); font-size:1.1rem; max-width:600px; margin:0.75rem auto 0;">
+      Enter your travel plan and our AI will optimize your route, fix inefficiencies,
+      save you time &amp; money, and build a perfect day-wise itinerary.
+    </p>
+  </div>
+</div>
+
+<div class="container py-5" style="max-width:1100px;">
+  <div class="row g-4">
+
+    <!-- INPUT FORM -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm p-4 sticky-top" style="top:80px;">
+        <h5 class="fw-bold mb-4" style="color:#1a1a2e;">
+          <i class="fas fa-sliders-h me-2" style="color:#e94560;"></i>Your Trip Details
+        </h5>
+
+        <div class="mb-3">
+          <label class="form-label">Trip Dates <span class="text-danger">*</span></label>
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-text mb-1 d-block">Start Date</label>
+              <input type="date" id="dateStart" class="form-control">
+            </div>
+            <div class="col-6">
+              <label class="form-text mb-1 d-block">End Date</label>
+              <input type="date" id="dateEnd" class="form-control">
+            </div>
+          </div>
+          <div class="form-text" id="tripDuration"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Places to Visit <span class="text-danger">*</span></label>
+          <textarea id="places" class="form-control" rows="4"
+                    placeholder="e.g. Delhi, Agra, Jaipur, Udaipur&#10;(one per line or comma-separated)"></textarea>
+          <div class="form-text">List all destinations you want to cover</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Starting Location <span class="text-danger">*</span></label>
+          <input type="text" id="startLocation" class="form-control"
+                 placeholder="e.g. Mumbai, India">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Budget <span class="text-muted small">(optional)</span></label>
+          <input type="text" id="budget" class="form-control"
+                 placeholder="e.g. ₹50,000 total or $500/person">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Travel Style <span class="text-danger">*</span></label>
+          <select id="style" class="form-select">
+            <option value="budget">💰 Budget — Save money, hostels, local transport</option>
+            <option value="balanced" selected>⚖️ Balanced — Mix of comfort and savings</option>
+            <option value="luxury">✨ Luxury — Premium hotels, comfort first</option>
+            <option value="fast-paced">⚡ Fast-paced — Cover maximum places</option>
+            <option value="relaxed">🌿 Relaxed — Slow travel, deep experiences</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="runOptimizer()" id="optimizeBtn">
+          <i class="fas fa-magic me-2"></i>Optimize My Trip
+        </button>
+
+        <!-- <div class="mt-3 p-3" style="background:#f0f4ff; border-radius:10px; font-size:0.82rem; color:#555;">
+          <i class="fas fa-info-circle me-1" style="color:#667eea;"></i>
+          Uses Groq AI (free). Get your free API key at
+          <a href="https://console.groq.com" target="_blank">console.groq.com</a>
+          and set <code>groq.api.key</code> in <code>application.properties</code>.
+        </div> -->
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="col-lg-8">
+
+      <!-- Empty state -->
+      <div id="emptyState" class="text-center py-5">
+        <div style="width:100px; height:100px; background:linear-gradient(135deg,#667eea20,#764ba220);
+             border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+          <i class="fas fa-route fa-2x" style="color:#667eea;"></i>
+        </div>
+        <h5 class="fw-bold" style="color:#1a1a2e;">Your optimized itinerary will appear here</h5>
+        <p class="text-muted">Fill in your trip details on the left and click <strong>Optimize My Trip</strong></p>
+
+        <!-- Example cards -->
+        <div class="row g-3 mt-3 text-start">
+          <div class="col-md-6">
+            <div class="card p-3 h-100" style="border:1.5px solid #667eea30; background:#f8f9ff;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-map-marked-alt" style="color:#667eea;"></i>
+                <span class="fw-bold small">Route Optimization</span>
+              </div>
+              <p class="text-muted small mb-0">AI reorders your destinations to minimize backtracking and travel time</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3 h-100" style="border:1.5px solid #e9456030; background:#fff8f9;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-calendar-check" style="color:#e94560;"></i>
+                <span class="fw-bold small">Day-wise Planning</span>
+              </div>
+              <p class="text-muted small mb-0">Realistic day-by-day schedule with activities and travel notes</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3 h-100" style="border:1.5px solid #56ab2f30; background:#f8fff8;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-piggy-bank" style="color:#56ab2f;"></i>
+                <span class="fw-bold small">Cost Savings</span>
+              </div>
+              <p class="text-muted small mb-0">Identifies where you can save money without compromising experience</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3 h-100" style="border:1.5px solid #f5a62330; background:#fffdf0;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-exclamation-triangle" style="color:#f5a623;"></i>
+                <span class="fw-bold small">Issue Detection</span>
+              </div>
+              <p class="text-muted small mb-0">Flags unrealistic plans, tight connections, and inefficient routing</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingState" class="d-none text-center py-5">
+        <div class="mb-4">
+          <div class="spinner-border text-primary" style="width:3rem; height:3rem;"></div>
+        </div>
+        <h5 class="fw-bold" style="color:#1a1a2e;">AI is analyzing your trip...</h5>
+        <p class="text-muted" id="loadingStep">Initializing optimizer...</p>
+        <p class="text-muted small">(May take up to 60s — retrying if rate limited)</p>
+        <div class="progress mt-3" style="height:6px; border-radius:10px; max-width:400px; margin:0 auto;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated w-100"
+               style="background:linear-gradient(90deg,#667eea,#e94560);"></div>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div id="errorState" class="d-none">
+        <div class="alert alert-danger d-flex align-items-start gap-3" style="border-radius:12px; border:none;">
+          <i class="fas fa-exclamation-circle mt-1 fa-lg"></i>
+          <div>
+            <div class="fw-bold">Optimization Failed</div>
+            <div class="small mt-1" id="errorMsg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="resultState" class="d-none">
+        <!-- Action bar -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-ai"><i class="fas fa-check-circle me-1"></i>Optimization Complete</span>
+            <span class="text-muted small" id="resultMeta"></span>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="copyResult()">
+              <i class="fas fa-copy me-1"></i>Copy
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="resetForm()">
+              <i class="fas fa-redo me-1"></i>New Trip
+            </button>
+          </div>
+        </div>
+
+        <!-- Rendered output -->
+        <div id="resultContent" class="card shadow-sm p-4"
+             style="font-size:0.95rem; line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Marked.js for markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  const loadingSteps = [
+    'Analyzing your destinations...',
+    'Calculating optimal route...',
+    'Checking travel times between locations...',
+    'Building day-wise schedule...',
+    'Identifying cost-saving opportunities...',
+    'Finalizing recommendations...'
+  ];
+
+  function runOptimizer() {
+    const dateStart = document.getElementById('dateStart').value;
+    const dateEnd = document.getElementById('dateEnd').value;
+    const places = document.getElementById('places').value.trim();
+    const startLocation = document.getElementById('startLocation').value.trim();
+    const budget = document.getElementById('budget').value.trim();
+    const style = document.getElementById('style').value;
+
+    if (!dateStart || !dateEnd || !places || !startLocation) {
+      alert('Please fill in Start Date, End Date, Places to Visit, and Starting Location.');
+      return;
+    }
+    if (new Date(dateEnd) < new Date(dateStart)) {
+      alert('End date must be after start date.');
+      return;
+    }
+
+    // Format dates as readable string for the prompt
+    const fmt = d => new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+    const dates = fmt(dateStart) + ' to ' + fmt(dateEnd);
+    const days = Math.round((new Date(dateEnd) - new Date(dateStart)) / 86400000) + 1;
+
+    // Show loading
+    document.getElementById('emptyState').classList.add('d-none');
+    document.getElementById('errorState').classList.add('d-none');
+    document.getElementById('resultState').classList.add('d-none');
+    document.getElementById('loadingState').classList.remove('d-none');
+
+    const btn = document.getElementById('optimizeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Optimizing...';
+
+    let step = 0;
+    const stepTimer = setInterval(() => {
+      if (step < loadingSteps.length)
+        document.getElementById('loadingStep').textContent = loadingSteps[step++];
+    }, 2000);
+
+    const startTime = Date.now();
+
+    fetch('/api/optimizer/optimize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dates, places, startLocation, budget, style })
+    })
+    .then(r => r.json())
+    .then(data => {
+      clearInterval(stepTimer);
+      document.getElementById('loadingState').classList.add('d-none');
+
+      if (data.error) {
+        document.getElementById('errorState').classList.remove('d-none');
+        document.getElementById('errorMsg').textContent = data.error;
+      } else {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        document.getElementById('resultMeta').textContent =
+          `Generated in ${elapsed}s · ${days} days · ${style} style`;
+        renderResult(data.result);
+        document.getElementById('resultState').classList.remove('d-none');
+      }
+    })
+    .catch(err => {
+      clearInterval(stepTimer);
+      document.getElementById('loadingState').classList.add('d-none');
+      document.getElementById('errorState').classList.remove('d-none');
+      document.getElementById('errorMsg').textContent =
+        'Network error. Make sure the server is running and OpenAI API key is configured.';
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magic me-2"></i>Optimize My Trip';
+    });
+  }
+
+  function renderResult(markdown) {
+    const container = document.getElementById('resultContent');
+
+    // Configure marked
+    marked.setOptions({ breaks: true, gfm: true });
+    let html = marked.parse(markdown);
+
+    // Style section headers
+    html = html
+      .replace(/<h1>/g, '<h4 class="fw-bold mt-4 mb-2" style="color:#1a1a2e; border-bottom:2px solid #e94560; padding-bottom:6px;">')
+      .replace(/<\/h1>/g, '</h4>')
+      .replace(/<h2>/g, '<h5 class="fw-bold mt-4 mb-2" style="color:#1a1a2e;">')
+      .replace(/<\/h2>/g, '</h5>')
+      .replace(/<h3>/g, '<h6 class="fw-bold mt-3 mb-1" style="color:#e94560;">')
+      .replace(/<\/h3>/g, '</h6>')
+      .replace(/<ul>/g, '<ul class="ps-3">')
+      .replace(/<li>/g, '<li class="mb-1">')
+      .replace(/<strong>/g, '<strong style="color:#1a1a2e;">');
+
+    // Wrap numbered sections in styled cards
+    const sections = [
+      { num: '1.', color: '#667eea', icon: 'fa-calendar-alt', label: 'Optimized Itinerary' },
+      { num: '2.', color: '#e94560', icon: 'fa-route', label: 'Route Optimization' },
+      { num: '3.', color: '#56ab2f', icon: 'fa-clock', label: 'Time-Saving Suggestions' },
+      { num: '4.', color: '#f5a623', icon: 'fa-piggy-bank', label: 'Cost Optimization' },
+      { num: '5.', color: '#dc3545', icon: 'fa-exclamation-triangle', label: 'Issues Found' },
+      { num: '6.', color: '#0dcaf0', icon: 'fa-lightbulb', label: 'Optional Improvements' },
+    ];
+
+    container.innerHTML = html;
+
+    // Add section badges to h4/h5 elements that start with numbers
+    container.querySelectorAll('h4, h5').forEach(el => {
+      const text = el.textContent.trim();
+      const match = sections.find(s => text.startsWith(s.num));
+      if (match) {
+        const badge = document.createElement('span');
+        badge.className = 'badge me-2';
+        badge.style.cssText = `background:${match.color}; font-size:0.7rem; vertical-align:middle;`;
+        badge.innerHTML = `<i class="fas ${match.icon} me-1"></i>${match.label}`;
+        el.prepend(badge);
+      }
+    });
+  }
+
+  function copyResult() {
+    const text = document.getElementById('resultContent').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target.closest('button');
+      btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy me-1"></i>Copy', 2000);
+    });
+  }
+
+  function resetForm() {
+    document.getElementById('resultState').classList.add('d-none');
+    document.getElementById('errorState').classList.add('d-none');
+    document.getElementById('emptyState').classList.remove('d-none');
+    document.getElementById('dateStart').value = '';
+    document.getElementById('dateEnd').value = '';
+    document.getElementById('tripDuration').textContent = '';
+    document.getElementById('places').value = '';
+    document.getElementById('startLocation').value = '';
+    document.getElementById('budget').value = '';
+    document.getElementById('style').value = 'balanced';
+  }
+
+  // Date picker logic
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateStart').min = today;
+  document.getElementById('dateEnd').min = today;
+
+  document.getElementById('dateStart').addEventListener('change', function() {
+    const start = this.value;
+    document.getElementById('dateEnd').min = start;
+    updateDuration();
+  });
+  document.getElementById('dateEnd').addEventListener('change', updateDuration);
+
+  function updateDuration() {
+    const s = document.getElementById('dateStart').value;
+    const e = document.getElementById('dateEnd').value;
+    const el = document.getElementById('tripDuration');
+    if (s && e && new Date(e) >= new Date(s)) {
+      const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+      el.textContent = `✔ ${days} day${days > 1 ? 's' : ''} trip`;
+      el.style.color = '#56ab2f';
+    } else if (s && e) {
+      el.textContent = '⚠ End date must be after start date';
+      el.style.color = '#e94560';
+    } else {
+      el.textContent = '';
+    }
+  }
+</script>
+</body>
+</html>
