@@ -3,7 +3,7 @@
 GitHub Repository: [https://github.com/vineet-saini/Travel_hub](https://github.com/vineet-saini/Travel_hub)
 
 TravelHub is a full-stack travel web application built with **Spring Boot**, **Thymeleaf**, **Bootstrap**, and **Java**.  
-It allows users to browse countries and places, view travel packages, book trips, manage bookings, and optimize itineraries using AI.
+It allows users to browse countries and places, view travel packages, book trips, manage bookings, and optimize itineraries using AI. 
 
 ---
 
